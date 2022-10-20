@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.4
+Date: 20 October 2022
+  Changes:
+    - Don't burn when touching water
+    - Add mod settings
+    - Add a number of settings to dramatically adjust difficulty
+---------------------------------------------------------------------------------------------------
 Version: 0.2.3
 Date: 24 November 2020
   Changes:

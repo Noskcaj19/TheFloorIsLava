@@ -1,6 +1,5 @@
 --control.lua
 
-require "config"
 require "globals"
 local Func = require "functionality"
 
@@ -11,15 +10,35 @@ script.on_nth_tick(10,
 		-- check if player stands on non-manmade tiling
 		if not player.surface.get_tile(player.position).valid then return nil end
 		local undertile = player.surface.get_tile(player.position)
-		if player.character and not (undertile.hidden_tile or string.find(undertile.name, "factory")) then
+		if player.character and not (undertile.hidden_tile or string.find(undertile.name, "factory") or undertile.name == "water") then
 			-- "factory" catches factorissimo buildings
-			local env_damage = Config.environment_damage
+
+			local env_damage = settings.global["tfil-environment-damage"].value
+			local vehicle_damage_multiplier = settings.global["tfil-vehicle-damage-modifier"].value
+
 			if player.vehicle then
-				env_damage = Config.environment_damage * Config.vehicle_damage_modifier
+				env_damage = settings.global["tfil-environment-damage"].value * vehicle_damage_multiplier
 			end
 
-			-- do damage
-			player.character.damage(env_damage, player.force, "fire")
+
+			if settings.global["tfil-bypass-armor"].value then
+				local fraction_of_health = settings.global["tfil-bypass-armor-damage-modifier"].value
+
+				local damage = (player.character.prototype.max_health * fraction_of_health)
+
+				if player.vehicle then
+					damage = damage * vehicle_damage_multiplier
+				end
+
+				player.character.health = player.character.health - damage
+				if player.character.health == 0 then
+					player.character.die()
+				end
+			else
+				-- do damage
+				player.character.damage(env_damage, "neutral", "fire")
+			end
+
 
 			-- if last position is nil, set it to zeros to avoid errors
 			if not Temporary.last_position then
@@ -29,12 +48,22 @@ script.on_nth_tick(10,
 			-- if player is standing still, light a fire underneath player
 			if Temporary.last_position[index] and
 				player.position.x == Temporary.last_position[index].x and
-				player.position.y == Temporary.last_position[index].y then
+				player.position.y == Temporary.last_position[index].y and
+				not settings.global["tfil-burn-instantly"].value then
+				player.surface.create_entity{name="fire-flame", position=player.position, force="neutral"}
+			end
+
+			if settings.global["tfil-burn-instantly"].value then
 				player.surface.create_entity{name="fire-flame", position=player.position, force="neutral"}
 			end
 
 			-- keep track of position every 3rd second to see if player stands still
 			Temporary.last_position[index] = {x=player.position.x, y=player.position.y}
+
+
+			if settings.global["tfil-die-instantly"].value then
+				player.character.die()
+			end
 		end
 	end
  end
@@ -81,5 +110,3 @@ script.on_event(defines.events.on_player_created,
 	end
  end
 )
-
-

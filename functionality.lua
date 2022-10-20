@@ -4,7 +4,7 @@
 local Func = {}
 
 local function area_within_radius(area, center)
-   local r = Config.beginning_path_radius
+   local r = settings.global["tfil-beginning-path-radius"].value
    return area.left_top.x-center.x < r and area.right_bottom.x-center.x > -r and
       area.left_top.y-center.y < r and area.right_bottom.y-center.y > -r
 end
@@ -15,10 +15,10 @@ local function make_brick_circle(area, center, surface)
    
    -- fill changed_tiles with tiles that are within a radius of the 0,0 position
    -- and designate them to be 'stone-path's
-   local r = Config.beginning_path_radius
+   local r = settings.global["tfil-beginning-path-radius"].value
    for x = area.left_top.x - center.x, area.right_bottom.x - center.x do
       for y = area.left_top.y - center.y, area.right_bottom.y - center.y do
-	 if math.sqrt(x*x + y*y) < Config.beginning_path_radius then
+	 if math.sqrt(x*x + y*y) < r then
 	    table.insert(changed_tiles, {name="stone-path", position={x+center.x, y+center.y}})
 	 end
       end
@@ -50,7 +50,7 @@ function let_player_start(plr_ind)
    --
    Temporary.last_position[plr_ind] = {x=plr.position.x, y=plr.position.y}
 
-   local r = Config.beginning_path_radius
+   local r = settings.global["tfil-beginning-path-radius"].value
    Func.make_brick_circle({left_top={x=plr.position.x-r, y=plr.position.y-r},
                            right_bottom={x=plr.position.x+r, y=plr.position.y+r}},
          plr.position, plr.surface)
