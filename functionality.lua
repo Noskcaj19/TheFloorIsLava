@@ -18,10 +18,13 @@ local function make_brick_circle(area, center, surface)
    local r = settings.global["tfil-beginning-path-radius"].value
    for x = area.left_top.x - center.x, area.right_bottom.x - center.x do
       for y = area.left_top.y - center.y, area.right_bottom.y - center.y do
-	 if math.sqrt(x*x + y*y) < r then
-	    table.insert(changed_tiles, {name="stone-path", position={x+center.x, y+center.y}})
-	 end
-      end
+	     if math.sqrt(x*x + y*y) < r then
+            local tile = surface.get_tile(x+center.x, y+center.y)
+            if tile.prototype.collision_mask["ground-tile"] then
+	           table.insert(changed_tiles, {name="stone-path", position={x+center.x, y+center.y}})
+	        end
+         end
+       end
    end
    
    -- apply the stone path tiles
@@ -40,15 +43,19 @@ function let_player_start(plr_ind)
       plr.insert({name="stone-brick", count=30})
    end
 
+   Temporary.last_position[plr_ind] = {x=plr.position.x, y=plr.position.y}
+
+   -- Don't generate in factorissimo 
+   if string.find(plr.surface.name, "Factory") then
+      return
+   end
+
    -- make sure the player isn't set on fire uppon world creation
    local undertile = plr.surface.get_tile(plr.position)
    if not undertile.valid then return nil end
    if not not (undertile.hidden_tile or string.find(undertile.name, "factory")) then
       plr.surface.set_tiles{{name="stone-path", position=plr.position}}
    end
-
-   --
-   Temporary.last_position[plr_ind] = {x=plr.position.x, y=plr.position.y}
 
    local r = settings.global["tfil-beginning-path-radius"].value
    Func.make_brick_circle({left_top={x=plr.position.x-r, y=plr.position.y-r},

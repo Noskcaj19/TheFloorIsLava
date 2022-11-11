@@ -10,7 +10,7 @@ script.on_nth_tick(10,
 		-- check if player stands on non-manmade tiling
 		if not player.surface.get_tile(player.position).valid then return nil end
 		local undertile = player.surface.get_tile(player.position)
-		if player.character and not (undertile.hidden_tile or string.find(undertile.name, "factory") or undertile.name == "water") then
+		if player.character and not (undertile.hidden_tile or string.find(undertile.name, "factory") or string.find(undertile.name, "water")) then
 			-- "factory" catches factorissimo buildings
 
 			local env_damage = settings.global["tfil-environment-damage"].value
