@@ -10,8 +10,12 @@ script.on_nth_tick(10,
 		-- check if player stands on non-manmade tiling
 		if not player.surface.get_tile(player.position).valid then return nil end
 		local undertile = player.surface.get_tile(player.position)
+		-- "factory" catches factorissimo buildings
 		if player.character and not (undertile.hidden_tile or string.find(undertile.name, "factory") or string.find(undertile.name, "water")) then
-			-- "factory" catches factorissimo buildings
+			-- Don't burn when flying in a jetpack
+			if remote.interfaces.jetpack and remote.call("jetpack", "is_jetpacking", {character=player.character}) then
+				return nil
+			end
 
 			local env_damage = settings.global["tfil-environment-damage"].value
 			local vehicle_damage_multiplier = settings.global["tfil-vehicle-damage-modifier"].value
