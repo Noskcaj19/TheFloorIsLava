@@ -9,3 +9,4 @@ Tweaks:
 - Added an option to start burning immediately
 - Added an option to die instantly
 - Added an option to ignore armor and resistances
+- Added an option to make nuke blasts permanently burn

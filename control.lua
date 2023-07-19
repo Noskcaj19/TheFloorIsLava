@@ -11,7 +11,14 @@ script.on_nth_tick(10,
 		if not player.surface.get_tile(player.position).valid then return nil end
 		local undertile = player.surface.get_tile(player.position)
 		-- "factory" catches factorissimo buildings
-		if player.character and not (undertile.hidden_tile or string.find(undertile.name, "factory") or string.find(undertile.name, "water")) then
+		if player.character and not (string.find(undertile.name, "factory") or string.find(undertile.name, "water")) then
+			if undertile.hidden_tile and (undertile.name ~= "nuclear-ground") then
+				if (undertile.hidden_tile == "nuclear-ground" and settings.global["tfil-evil-nuke"].value) then
+					goto burn
+				end
+				goto continue
+			end
+			::burn::
 			-- Don't burn when flying in a jetpack
 			if remote.interfaces.jetpack and remote.call("jetpack", "is_jetpacking", {character=player.character}) then
 				return nil
@@ -69,6 +76,7 @@ script.on_nth_tick(10,
 				player.character.die()
 			end
 		end
+		::continue::
 	end
  end
 )

@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.7
+Date: 18 July 2023
+  Bugfixes:
+    - Nuclear ground now burns the player correctly
+  Minor Features:
+    - Added an option to make atomic blast permantly burn the player, even when covered (default off)
+---------------------------------------------------------------------------------------------------
 Version: 0.2.6
 Date: 27 February 2023
   Changes:

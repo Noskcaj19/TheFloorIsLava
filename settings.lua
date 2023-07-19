@@ -40,5 +40,11 @@ data:extend({
         name = "tfil-bypass-armor-damage-modifier",
         setting_type = "runtime-global",
         default_value = .1
+    },
+    {
+        type = "bool-setting",
+        name = "tfil-evil-nuke",
+        setting_type = "runtime-global",
+        default_value = false
     }
 })
