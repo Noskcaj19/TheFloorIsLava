@@ -57,15 +57,15 @@ script.on_nth_tick(10,
 			end
 
 			-- if player is standing still, light a fire underneath player
-			if Temporary.last_position[index] and
+			if (Temporary.last_position[index] and
 				player.position.x == Temporary.last_position[index].x and
-				player.position.y == Temporary.last_position[index].y and
-				not settings.global["tfil-burn-instantly"].value then
-				player.surface.create_entity{name="fire-flame", position=player.position, force="neutral"}
-			end
+				player.position.y == Temporary.last_position[index].y) or
+				settings.global["tfil-burn-instantly"].value then
 
-			if settings.global["tfil-burn-instantly"].value then
-				player.surface.create_entity{name="fire-flame", position=player.position, force="neutral"}
+				if player.vehicle and vehicle_damage_multiplier == 0 then
+				else
+					player.surface.create_entity{name="fire-flame", position=player.position, force="neutral"}
+				end
 			end
 
 			-- keep track of position every 3rd second to see if player stands still
@@ -122,3 +122,4 @@ script.on_event(defines.events.on_player_created,
 	end
  end
 )
+
