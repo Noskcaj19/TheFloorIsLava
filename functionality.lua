@@ -43,24 +43,29 @@ function let_player_start(plr_ind)
       plr.insert({name="stone-brick", count=30})
    end
 
-   Temporary.last_position[plr_ind] = {x=plr.position.x, y=plr.position.y}
+   Temporary.last_position[plr_ind] = {x=plr.physical_position.x, y=plr.physical_position.y}
 
    -- Don't generate in factorissimo 
    if string.find(plr.surface.name, "Factory") then
       return
    end
 
+   -- Don't generate in space age space
+   if string.find(plr.surface.name, "platform-") then
+      return
+   end
+
    -- make sure the player isn't set on fire uppon world creation
-   local undertile = plr.surface.get_tile(plr.position)
+   local undertile = plr.surface.get_tile(plr.physical_position)
    if not undertile.valid then return nil end
    if not not (undertile.hidden_tile or string.find(undertile.name, "factory")) then
-      plr.surface.set_tiles{{name="stone-path", position=plr.position}}
+      plr.surface.set_tiles{{name="stone-path", position=plr.physical_position}}
    end
 
    local r = settings.global["tfil-beginning-path-radius"].value
-   Func.make_brick_circle({left_top={x=plr.position.x-r, y=plr.position.y-r},
-                           right_bottom={x=plr.position.x+r, y=plr.position.y+r}},
-         plr.position, plr.surface)
+   Func.make_brick_circle({left_top={x=plr.physical_position.x-r, y=plr.physical_position.y-r},
+                           right_bottom={x=plr.physical_position.x+r, y=plr.physical_position.y+r}},
+         plr.physical_position, plr.surface)
 
 end
 

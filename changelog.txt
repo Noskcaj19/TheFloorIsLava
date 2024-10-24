@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.1
+Date: 24 October 2024
+  Bugfixes:
+    - Don't burn in map view
+    - Don't burn in space
+    - Don't burn riding a cargo pod
+    - Dont' generate concrete in space
+---------------------------------------------------------------------------------------------------
 Version: 0.3.0
 Date: 23 October 2024
   Features:

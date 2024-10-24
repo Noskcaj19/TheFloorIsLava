@@ -4,12 +4,28 @@ require "globals"
 local Func = require "functionality"
 
 script.on_nth_tick(10,
- function (e)
+function (e)
+	-- a cargo pod lands on a surfave, then becomes invalid. this means the player has landed
+	for i=#Temporary.players_in_rocket,1,-1 do
+		local pod = Temporary.players_in_rocket[i]
+		if not pod.valid then
+			table.remove(Temporary.players_in_rocket, i)
+		end
+	end
+
+
 	for index,player in pairs(game.connected_players) do  --loop through all online players on the server
 
 		-- check if player stands on non-manmade tiling
-		if not player.surface.get_tile(player.position).valid then return nil end
-		local undertile = player.surface.get_tile(player.position)
+		if not player.surface.get_tile(player.physical_position).valid then return nil end
+		-- if not player.controller_type == defines.controllers.character then return nil end
+		-- don't burn in space
+		if string.find(player.surface.name, "platform-") then
+			return
+		end
+		if Temporary.players_in_rocket[player.index] then return nil end
+
+		local undertile = player.surface.get_tile(player.physical_position)
 		-- "factory" catches factorissimo buildings
 		if player.character and not (string.find(undertile.name, "factory") or string.find(undertile.name, "water")) then
 			if undertile.hidden_tile and (undertile.name ~= "nuclear-ground") then
@@ -58,18 +74,18 @@ script.on_nth_tick(10,
 
 			-- if player is standing still, light a fire underneath player
 			if (Temporary.last_position[index] and
-				player.position.x == Temporary.last_position[index].x and
-				player.position.y == Temporary.last_position[index].y) or
+				player.physical_position.x == Temporary.last_position[index].x and
+				player.physical_position.y == Temporary.last_position[index].y) or
 				settings.global["tfil-burn-instantly"].value then
 
 				if player.vehicle and vehicle_damage_multiplier == 0 then
 				else
-					player.surface.create_entity{name="fire-flame", position=player.position, force="neutral"}
+					player.surface.create_entity{name="fire-flame", position=player.physical_position, force="neutral"}
 				end
 			end
 
 			-- keep track of position every 3rd second to see if player stands still
-			Temporary.last_position[index] = {x=player.position.x, y=player.position.y}
+			Temporary.last_position[index] = {x=player.physical_position.x, y=player.physical_position.y}
 
 
 			if settings.global["tfil-die-instantly"].value then
@@ -78,7 +94,7 @@ script.on_nth_tick(10,
 		end
 		::continue::
 	end
- end
+end
 )
 
 script.on_init(
@@ -97,29 +113,43 @@ script.on_init(
 )
 
 script.on_event(defines.events.on_player_changed_surface,
- function(event)
-    Func.let_player_start(event.player_index)
- end
+function(event)
+	Func.let_player_start(event.player_index)
+end
+)
+
+script.on_event(defines.events.on_player_driving_changed_state,
+function(event)
+	if not event.entity.name == "cargo-pod" then return end
+	-- when we launch from a planet, we start driving a cargo pod
+	-- when reaching a space platform, we exit the pod and stop driving it
+	-- landing on a planet however does not trigger this event
+	if game.players[event.player_index].driving then 
+		Temporary.players_in_rocket[event.player_index] = event.entity
+	else
+		Temporary.players_in_rocket[event.player_index] = nil
+	end
+end
 )
 
 script.on_event(defines.events.on_cutscene_cancelled,
- function(event)
-    Func.let_player_start(event.player_index)
- end
+function(event)
+	Func.let_player_start(event.player_index)
+end
 )
 
 script.on_event(defines.events.on_player_respawned,
- function(event)
-    	Func.let_player_start(event.player_index)
- end
+function(event)
+		Func.let_player_start(event.player_index)
+end
 )
 
 script.on_event(defines.events.on_player_created,
- function(event)
+function(event)
 	local player = game.get_player(event.player_index)
-	if player.character or player.cutscene_character then
-		Func.let_player_start(event.player_index or player.cutscene_character)
+	if player.character then
+		Func.let_player_start(event.player_index)
 	end
- end
+end
 )
 
