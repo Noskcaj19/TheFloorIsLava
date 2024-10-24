@@ -20,7 +20,7 @@ local function make_brick_circle(area, center, surface)
       for y = area.left_top.y - center.y, area.right_bottom.y - center.y do
 	     if math.sqrt(x*x + y*y) < r then
             local tile = surface.get_tile(x+center.x, y+center.y)
-            if tile.prototype.collision_mask["ground-tile"] then
+            if tile.prototype.collision_mask.layers["ground_tile"] then
 	           table.insert(changed_tiles, {name="stone-path", position={x+center.x, y+center.y}})
 	        end
          end
@@ -39,7 +39,7 @@ function let_player_start(plr_ind)
    local plr = game.players[plr_ind]
 
    -- give the player some bricks initially
-   if not global.freeplay_interface_called then
+   if not storage.freeplay_interface_called then
       plr.insert({name="stone-brick", count=30})
    end
 

@@ -91,7 +91,7 @@ script.on_init(
 			respawn_items["stone-brick"] = 10
 			remote.call("freeplay", "set_respawn_items", respawn_items)
 
-			global.freeplay_interface_called = true
+			storage.freeplay_interface_called = true
 		end
 	end
 )
@@ -109,16 +109,16 @@ script.on_event(defines.events.on_cutscene_cancelled,
 )
 
 script.on_event(defines.events.on_player_respawned,
-	function(event)
+ function(event)
     	Func.let_player_start(event.player_index)
-	end
+ end
 )
 
 script.on_event(defines.events.on_player_created,
  function(event)
 	local player = game.get_player(event.player_index)
-	if player.character then
-		Func.let_player_start(event.player_index)
+	if player.character or player.cutscene_character then
+		Func.let_player_start(event.player_index or player.cutscene_character)
 	end
  end
 )

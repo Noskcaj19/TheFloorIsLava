@@ -5,7 +5,7 @@
     "author": "Weston Kelliher, Xorimuth, Noskcaj19",
     "contact": "",
     "homepage": "",
-    "factorio_version": "1.1",
+    "factorio_version": "2.0",
     "dependencies": ["base"],
     "description": "Extreme radiation causes you to take damage unless you're on manmade tiles. A fun challenge for territory expansion.\nOriginal mod by westoncraft, updated to 1.0 by Xorimuth, tweaks by Noskcaj19."
 }
